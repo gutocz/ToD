@@ -1,4 +1,7 @@
-module Main where
+import System.IO
+import Modules.Users.Users
 
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+    let result = createUser "joao123" "João Silva" "senhasupersegura" "Usuário ativo desde 2021"
+    putStrLn result
