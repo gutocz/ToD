@@ -12,3 +12,6 @@ deleteUser = deleteUserDatabase
 
 getName :: String -> IO String
 getName = getNameDatabase
+
+loginUser :: String -> String -> IO Bool
+loginUser = loginDatabase

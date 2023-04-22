@@ -1,36 +1,61 @@
 import System.IO
+import System.Exit (exitSuccess)
 import Modules.Users.Users
+import Modules.Util.ClearScreen
 
 main :: IO ()
 main = do
+    menuInicial
+
+menuInicial :: IO()
+menuInicial = do
     putStrLn "SALVE\nMENU FODA"
-    putStrLn "Selecione uma opção:\n1.Cadastrar novo usuário\n2.Deletar usuário\n3.Exibir nome"
+    putStrLn "Selecione uma opção:\n1. Cadastrar novo usuário\n2. Fazer Login\n3. Sair"
     a <- getLine
     let option = read a :: Int
-    if option == 1
-        then do
-            putStrLn "Digite seu username: "
-            name <- getLine
-            putStrLn "Digite seu nome: "
-            username <- getLine
-            putStrLn "Digite sua senha: "
-            password <- getLine
-            putStrLn "Digite sua descrição: "
-            desc <- getLine
-            createUser name username password desc
-    else
-        if option == 2
-            then do
-                putStrLn "Digite o username da conta que quer deletar: "
-                username <- getLine
-                deleteUser username
-        else
-            if option == 3
-                then do
-                    putStrLn "Digite o username da conta que quer saber o nome: "
-                    username <- getLine
-                    name <- getName username
-                    putStrLn name
-            else
-                putStrLn "Erro"
-    
+    case option of
+        1 -> cadastro
+        2 -> login
+        3 -> exitSuccess
+        _ -> putStrLn "Erro"
+
+cadastro :: IO()
+cadastro = do
+    clearScreen
+    putStrLn "Digite seu username: "
+    name <- getLine
+    putStrLn "Digite seu nome: "
+    username <- getLine
+    putStrLn "Digite sua senha: "
+    password <- getLine
+    putStrLn "Digite sua descrição: "
+    desc <- getLine
+    createUser name username password desc
+    menuInicial
+
+login :: IO()
+login = do
+    clearScreen
+    putStrLn "Username: "
+    username <- getLine
+    putStrLn "Senha: "
+    password <- getLine
+    statusLogin <- loginUser username password
+    if statusLogin then do
+        telaLogin
+    else do
+        putStrLn "Dados Incorretos"
+        login
+
+telaLogin :: IO()
+telaLogin = do
+    clearScreen
+    putStrLn "1. Perfil\n2. Listas\n3. Sair"
+    option <- getLine
+    case (read option :: Int) of
+        1 -> putStrLn "telaPerfil"
+        2 -> putStrLn "Listas"
+        3 -> menuInicial
+        _ -> do
+            putStrLn "Opção inválida, tente novamente."
+            telaLogin
