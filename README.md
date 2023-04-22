@@ -6,7 +6,7 @@ A ToD permite que os usuários criem perfis para armazenar suas listas de tarefa
 
 A ToD também permite que os usuários criem uma lista de tarefas compartilhada, onde é possível fazer todas as ações anteriores em conjunto com outros perfis de usuário escolhidos, indicando quais perfis têm acesso.
 
-Para executar a ToD, é necessário ter o compilador GHC e a ferramenta de construção Cabal instalados. A aplicação usa um banco de dados SQLite para armazenar as tarefas e os perfis de usuário. A interface de linha de comando é fácil de usar e intuitiva.
+Para executar a ToD, é necessário ter o compilador GHC e a ferramenta de construção Cabal instalados. A aplicação usa um banco de dados simples em arquivos de texto para armazenar as tarefas e os perfis de usuário. A interface de linha de comando é fácil de usar e intuitiva.
 # Funcionalidades
 
 - Criação de perfil para armazenar sua(s) lista(s).
