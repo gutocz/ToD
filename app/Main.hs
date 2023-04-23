@@ -45,7 +45,16 @@ login = do
         telaLogin
     else do
         putStrLn "Dados Incorretos"
-        login
+        putStrLn "Tentar Novamente?"
+        putStrLn "Sim (S) - Não (N)"
+        resp <- getLine
+        case resp of
+            "S" -> login
+            "N" -> menuInicial
+            "s" -> login
+            "n" -> menuInicial
+            _   -> putStrLn "Opção Inválida"
+
 
 telaLogin :: IO()
 telaLogin = do
