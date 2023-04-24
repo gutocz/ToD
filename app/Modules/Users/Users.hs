@@ -1,17 +1,18 @@
 module Modules.Users.Users where
 import System.IO
-import Modules.Database.Database
+import Modules.Database.Database -- import Database para realizar as funções
 
 data User = User { username :: String, name :: String, password :: String, description :: String }
+-- Definindo o tipo de dado que é USER, quais parâmetros recebe
 
 createUser :: String -> String -> String -> String -> IO()
-createUser = createUserDatabase
+createUser = createUserDatabase -- Função que cria novos Users, executada em Database
 
 deleteUser :: String -> IO()
-deleteUser = deleteUserDatabase
+deleteUser = deleteUserDatabase -- Função que deleta um User, executada em Database
 
 getName :: String -> IO String
-getName = getNameDatabase
+getName = getNameDatabase -- Função que retorna o Nome de um User, resgata do Database
 
 loginUser :: String -> String -> IO Bool
-loginUser = loginDatabase
+loginUser = loginDatabase -- Função que realiza o login de um user, fazendo contato também com o Database
