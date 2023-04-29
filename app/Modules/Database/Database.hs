@@ -1,6 +1,7 @@
 module Modules.Database.Database where
 import System.IO
 import System.Directory
+import Modules.Tasks.Tasks
 
 directoryDatabase :: String
 directoryDatabase = "./Modules/Database/LocalUsers/" -- Função que retorna o local padrão dos users criados
@@ -31,3 +32,23 @@ loginDatabase username password = do
         if linhas !! 2 == password then return True
         else return False
     else return False
+
+createListDatabase :: String -> String -> String -> IO()
+createListDatabase user name description = do
+    let filePath = directoryDatabase++user++name++ ".txt"
+    let list = [user, name, description] -- seta 'list' como uma lista que guardará tasks futuramente
+    writeFile filePath (unlines list)
+
+getListDatabase :: String -> String -> IO()
+getListDatabase username name = do
+    contents <- readFile (directoryDatabase++username++name++ ".txt")
+    let array = words contents
+    mapM_ putStrLn array
+
+addTaskDatabase :: String -> String -> String -> String -> String -> String -> IO()
+addTaskDatabase user name nameTask desc date priority = do
+    let filePath = directoryDatabase ++ user ++ name ++ ".txt"
+    let taskl = unlines (createTask nameTask desc date priority)
+    handle <- openFile filePath AppendMode
+    hPutStrLn handle taskl
+    hClose handle
