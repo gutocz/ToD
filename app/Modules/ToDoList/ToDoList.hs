@@ -1,16 +1,14 @@
 module Modules.ToDoList.ToDoList where
 
 import Modules.Tasks.Tasks
-import Modules.Database.Database
 
-data List = List { user :: String, name :: String, description :: String, tasks :: [Task]}
--- Definindo o tipo de dado que é LIST, quais parâmetros 
+data ToDoList = ToDoList { listName :: String, listDescription :: String, tasks :: [Task] }
 
-createList :: String -> String -> String -> IO()
-createList = createListDatabase
+addTask :: ToDoList -> Task -> ToDoList
+addTask (ToDoList name desc tasks) task = ToDoList name desc (task:tasks)
 
-getList :: String -> String -> IO()
-getList = getListDatabase
+removeTask :: ToDoList -> Int -> ToDoList
+removeTask (ToDoList name desc tasks) index = ToDoList name desc (take index tasks ++ drop (index + 1) tasks)
 
-addTask :: String -> String -> String -> String -> String -> String -> IO()
-addTask = addTaskDatabase
+getTask :: ToDoList -> Int -> Task
+getTask (ToDoList name desc tasks) index = tasks !! index

@@ -5,9 +5,12 @@ import System.Exit (exitSuccess)
 import Modules.Users.Users
 import Modules.Util.ClearScreen
 import Modules.ToDoList.ToDoList
+import Modules.Database.Database
+import Modules.Tasks.Tasks
 
 menuInicial :: IO()
 menuInicial = do
+    clearScreen
     putStrLn "SALVE\nMENU FODA"
     putStrLn "Selecione uma opção:\n1. Cadastrar novo usuário\n2. Fazer Login\n3. Sair"
     a <- getLine
@@ -73,7 +76,7 @@ telaListas username = do
     putStrLn "1. Suas Listas\n2. Cadastrar Nova Lista\n3. Sair"
     option <- getLine
     case (read option :: Int) of
-        1 -> putStrLn "Listas"
+        1 -> telaListasPerfil username
         2 -> telaCadastroListas username
         3 -> telaLogin username
         _ -> do
@@ -84,34 +87,21 @@ telaCadastroListas :: String -> IO ()
 telaCadastroListas username = do
     clearScreen
     putStrLn "Nome da Lista: "
-    name <- getLine
+    listname <- getLine
     putStrLn "Descreva sua Lista: "
     desc <- getLine
-    createList username name desc
-    telaAcessoLista username name
+    let newList = ToDoList listname desc []
+    let filePath = directoryDatabase ++ username ++ "/" ++ username ++ "/" ++ "listas" ++ listname ++ ".txt"
+    saveToDoList newList filePath
+    telaAcessoLista username listname
 
 telaAcessoLista :: String -> String -> IO ()
 telaAcessoLista username name = do
-    putStrLn "1. Adicionar Tarefa"
-    option <- getLine
-    case (read option :: Int) of
-        1 -> telaAdicionarTarefa username name
-        2 -> telaListas username
-        _ -> do
-            putStrLn "Opção inválida, tente novamente."
-            telaAcessoLista username name
+    clearScreen
 
 telaAdicionarTarefa :: String -> String -> IO()
 telaAdicionarTarefa username namelist= do
-    putStrLn "Nome: "
-    nametask <- getLine
-    putStrLn "Descrição: "
-    desc <- getLine
-    putStrLn "Data: "
-    date <- getLine
-    putStrLn "Prioridade: "
-    priority <- getLine
-    addTask username namelist nametask desc date priority
+    clearScreen
 
 telaListasPerfil :: String -> IO()
 telaListasPerfil username = do
