@@ -10,3 +10,9 @@ createToDoList = createToDoListDatabase
 
 addTask :: String -> String -> String -> String -> String -> String -> IO()
 addTask = addTaskDatabase
+
+deleteTask :: String -> String -> String -> IO()
+deleteTask = deleteTaskDatabase
+
+editTask :: String -> String -> String -> String -> String -> IO()
+editTask = editTaskDatabase

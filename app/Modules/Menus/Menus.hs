@@ -66,12 +66,25 @@ telaLogin username = do
     putStrLn "1. Perfil\n2. Listas\n3. Sair"
     option <- getLine
     case (read option :: Int) of
-        1 -> putStrLn "telaPerfil"
+        1 -> telaPerfil username
         2 -> telaListas username
         3 -> menuInicial
         _ -> do
             putStrLn "Opção inválida, tente novamente."
             telaLogin username
+
+telaPerfil :: String -> IO()
+telaPerfil username = do
+    clearScreen
+    putStrLn "1. Editar Perfil\n2. Sair"
+    option <- getLine
+    case option of
+        "1" -> do
+            return ()
+        "2" -> telaLogin username
+        _ -> do
+            putStrLn "Opção inválida, tente novamente."
+            telaPerfil username
 
 telaListas :: String -> IO ()
 telaListas username = do
@@ -140,19 +153,38 @@ telaListarTarefas username name = do
 telaAcessoTarefa :: String -> String -> String -> IO ()
 telaAcessoTarefa username name task = do
     clearScreen
-    --putStrLn "1. Editar Tarefa\n2. Excluir Tarefa\n3. Sair"
-    --option <- getLine
-    --case option of
-    --    "1" -> do
-    --        telaEditarTarefa username name task
-    --        return ()
-    --    "2" -> do
-    --        telaExcluirTarefa username name task
-    --        return ()
-    --    "3" -> telaListarTarefas username name
-    --    _ -> do
-    --        putStrLn "Opção inválida, tente novamente."
-    --        telaAcessoTarefa username name task
+    putStrLn "1. Editar Tarefa\n2. Excluir Tarefa\n3. Sair"
+    option <- getLine
+    case option of
+        "1" -> do
+            telaEditarTarefa username name task
+            return ()
+        "2" -> do
+            telaExcluirTarefa username name task
+            return ()
+        "3" -> telaListarTarefas username name
+        _ -> do
+            putStrLn "Opção inválida, tente novamente."
+            telaAcessoTarefa username name task
+
+telaExcluirTarefa :: String -> String -> String -> IO ()
+telaExcluirTarefa username name task = do
+    clearScreen
+    putStrLn "Tem certeza que deseja excluir essa tarefa?"
+    putStrLn "Sim (S) - Não (N)"
+    resp <- getLine
+    case resp of
+        "S" -> do
+            deleteTask username name task
+            telaListarTarefas username name
+        "N" -> telaAcessoTarefa username name task
+        "s" -> do
+            deleteTask username name task
+            telaListarTarefas username name
+        "n" -> telaAcessoTarefa username name task
+        _   -> do
+            putStrLn "Opção Inválida"
+            telaExcluirTarefa username name task
 
 telaAdicionarTarefa :: String -> String -> IO()
 telaAdicionarTarefa username namelist= do
@@ -167,6 +199,37 @@ telaAdicionarTarefa username namelist= do
     priority <- getLine
     addTask username namelist taskname desc date priority
     telaListarTarefas username namelist
+
+telaEditarTarefa :: String -> String -> String -> IO ()
+telaEditarTarefa username namelist task = do
+    clearScreen
+    putStrLn "1. Nome da Tarefa\n2. Descrição da Tarefa\n3. Data da Tarefa\n4. Prioridade da Tarefa\n5. Sair"
+    option <- getLine
+    case option of
+        "1" -> do
+            putStrLn "Novo nome da Tarefa: "
+            newname <- getLine
+            editTask username namelist task "name" newname
+            telaAcessoTarefa username namelist task
+        "2" -> do
+            putStrLn "Nova descrição da Tarefa: "
+            newdesc <- getLine
+            editTask username namelist task "desc" newdesc
+            telaAcessoTarefa username namelist task
+        "3" -> do
+            putStrLn "Nova data da Tarefa: "
+            newdate <- getLine
+            editTask username namelist task "date" newdate
+            telaAcessoTarefa username namelist task
+        "4" -> do
+            putStrLn "Nova prioridade da Tarefa: "
+            newpriority <- getLine
+            editTask username namelist task "priority" newpriority
+            telaAcessoTarefa username namelist task
+        "5" -> telaAcessoTarefa username namelist task
+        _ -> do
+            putStrLn "Opção inválida, tente novamente."
+            telaEditarTarefa username namelist task
 
 telaListasPerfil :: String -> IO ()
 telaListasPerfil username = do

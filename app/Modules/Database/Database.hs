@@ -55,3 +55,20 @@ addTaskDatabase username listName taskName taskDesc taskDate taskPriority = do
     let filePath = directoryDatabase++username++"/listas/"++listName++"/"
     writeFile (filePath ++ taskName) (unlines taskcontent)
 
+deleteTaskDatabase :: String -> String -> String -> IO()
+deleteTaskDatabase username listName taskName = do
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"
+    removeFile (filePath ++ taskName)
+
+editTaskDatabase :: String -> String -> String -> String -> String -> IO()
+editTaskDatabase username listName taskName newData oldData = do
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"
+    taskcontent <- readFile (filePath ++ taskName)
+    let linhas = lines taskcontent
+    let newLinhas = case oldData of
+            "Nome" -> [newData, linhas !! 1, linhas !! 2, linhas !! 3]
+            "Descrição" -> [head linhas, newData, linhas !! 2, linhas !! 3]
+            "Data" -> [head linhas, linhas !! 1, newData, linhas !! 3]
+            "Prioridade" -> [head linhas, linhas !! 1, linhas !! 2, newData]
+    writeFile (filePath ++ taskName) (unlines newLinhas)
+
