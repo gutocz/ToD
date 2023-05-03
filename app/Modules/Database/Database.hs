@@ -1,8 +1,9 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use when" #-}
 module Modules.Database.Database where
 import System.IO
 import System.Directory
-import Modules.Tasks.Tasks
-import Modules.ToDoList.ToDoList
+import Control.Monad (filterM)
 
 directoryDatabase :: String
 directoryDatabase = "./Modules/Database/LocalUsers/" -- Função que retorna o local padrão dos users criados
@@ -39,21 +40,18 @@ loginDatabase username password = do
     else return False
 
 --funções relacionadas a listas
--- Salva uma lista de to do em um arquivo de texto
-saveToDoList :: ToDoList -> FilePath -> IO ()
-saveToDoList todoList filePath = do
-  let listData = listName todoList ++ "\n" ++ listDescription todoList ++ "\n"
-                  ++ unlines (map show (tasks todoList))
-  withFile filePath WriteMode $ \handle -> do
-    hPutStr handle listData
-    hClose handle
+createToDoListDatabase :: String -> String -> String -> IO()
+createToDoListDatabase username listName listdesc = do
+    let listcontent = [listName, listdesc]
+    existFile <- doesDirectoryExist (directoryDatabase ++ username ++ "/listas"++"/"++listName)
+    if not existFile then do
+        createDirectory (directoryDatabase ++ username ++ "/listas"++"/"++listName)
+        writeFile (directoryDatabase++username++"/listas/"++listName++"/"++listName++ ".txt") (unlines listcontent)
+    else return ()
 
--- Carrega uma lista de to do de um arquivo de texto
-loadToDoList :: FilePath -> IO ToDoList
-loadToDoList filePath = do
-  withFile filePath ReadMode $ \handle -> do
-    listData <- hGetContents handle
-    let (name:desc:taskData) = lines listData
-        taskList = map read taskData
-    hClose handle -- fechar o arquivo aqui
-    return $ ToDoList name desc taskList
+addTaskDatabase :: String -> String -> String -> String -> String -> String -> IO()
+addTaskDatabase username listName taskName taskDesc taskDate taskPriority = do
+    let taskcontent = [taskName, taskDesc, taskDate, taskPriority]
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"
+    writeFile (filePath ++ taskName) (unlines taskcontent)
+
