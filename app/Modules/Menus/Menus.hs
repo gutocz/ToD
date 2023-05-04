@@ -10,6 +10,7 @@ import Modules.Tasks.Tasks
 import Distribution.Compat.Directory (listDirectory)
 import Control.Monad
 import System.Directory
+import System.FilePath
 
 menuInicial :: IO()
 menuInicial = do
@@ -141,7 +142,11 @@ telaListarTarefas username name = do
     putStrLn "0. Voltar"
     let tarefas' = zip [1..] tarefas
     forM_ tarefas' $ \(i, tarefa) -> do
-        putStrLn $ show i ++ ". " ++ tarefa
+        let path = directoryDatabase ++ username ++ "\\listas\\" ++ name ++ "\\" ++ tarefa
+        isFile <- doesFileExist path
+        if isFile && takeExtension tarefa /= ".txt"
+          then putStrLn $ show i ++ ". " ++ tarefa
+          else return ()
     option <- getLine
     case option of
         "0" -> telaAcessoLista username name
@@ -237,12 +242,12 @@ telaListasPerfil username = do
     putStrLn "Suas Listas: "
     listas <- listDirectory (directoryDatabase ++ username ++ "\\listas\\")
     putStrLn "0. Voltar"
-    let listas' = zip [1..] listas
+    let listas' = zip [1..] $ filter (not . (==".txt") . takeExtension) listas
     forM_ listas' $ \(i, lista) -> do
         putStrLn $ show i ++ ". " ++ lista
     option <- getLine
     case option of
-        "0" -> telaLogin username
+        "0" -> telaListas username
         _ -> do
             let list = listas' !! (read option - 1)
             telaAcessoLista username (snd list)
