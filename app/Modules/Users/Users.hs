@@ -16,3 +16,6 @@ getName = getNameDatabase -- Função que retorna o Nome de um User, resgata do 
 
 loginUser :: String -> String -> IO Bool
 loginUser = loginDatabase -- Função que realiza o login de um user, fazendo contato também com o Database
+
+editUser :: String -> String -> String -> String -> IO()
+editUser = editUserDatabase -- Função que edita um User, executada em Database

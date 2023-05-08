@@ -1,6 +1,5 @@
 module Modules.ToDoList.ToDoList where
 
-import Modules.Tasks.Tasks
 import Modules.Database.Database
 
 data ToDoList = ToDoList { listName :: String, listDescription :: String }

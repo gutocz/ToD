@@ -27,6 +27,11 @@ getNameDatabase username = do -- Função que retorna o nome de um usuário
     let linhas = lines conteudo -- seta 'linhas' como uma lista onde cada termo é uma linha de 'conteudo'
     return (linhas !! 1) -- retorna o termo 1 de 'linhas' que é o Nome do user
 
+editUserDatabase :: String -> String -> String -> String -> IO()
+editUserDatabase username name password description = do
+    let user = [username, name, password, description]
+    writeFile (directoryDatabase++username++"/"++username++ ".txt") (unlines user)
+
 --funções relacionadas ao login
 loginDatabase :: String -> String -> IO Bool
 loginDatabase username password = do
@@ -52,8 +57,9 @@ createToDoListDatabase username listName listdesc = do
 addTaskDatabase :: String -> String -> String -> String -> String -> String -> IO()
 addTaskDatabase username listName taskName taskDesc taskDate taskPriority = do
     let taskcontent = [taskName, taskDesc, taskDate, taskPriority]
-    let filePath = directoryDatabase++username++"/listas/"++listName++"/"
-    writeFile (filePath ++ taskName) (unlines taskcontent)
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName
+    withFile filePath WriteMode $ \handle -> do
+        hPutStr handle (unlines taskcontent)
 
 deleteTaskDatabase :: String -> String -> String -> IO()
 deleteTaskDatabase username listName taskName = do
@@ -62,4 +68,33 @@ deleteTaskDatabase username listName taskName = do
 
 editTaskDatabase :: String -> String -> String -> String -> String -> IO()
 editTaskDatabase username listName taskName newData oldData = do
-    putStrLn "bolo"
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName
+    let newFilePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName++".new"
+    conteudo <- readFile filePath
+    let linhas = lines conteudo
+    case oldData of
+        "name" -> do
+            let newTaskContent = [newData, linhas !! 1, linhas !! 2, linhas !! 3]
+            withFile newFilePath WriteMode $ \handle -> do
+                hPutStr handle (unlines newTaskContent)
+        "description" -> do
+            let newTaskContent = [linhas !! 0, newData, linhas !! 2, linhas !! 3]
+            withFile newFilePath WriteMode $ \handle -> do
+                hPutStr handle (unlines newTaskContent)
+        "date" -> do
+            let newTaskContent = [linhas !! 0, linhas !! 1, newData, linhas !! 3]
+            withFile newFilePath WriteMode $ \handle -> do
+                hPutStr handle (unlines newTaskContent)
+        "priority" -> do
+            let newTaskContent = [linhas !! 0, linhas !! 1, linhas !! 2, newData]
+            withFile newFilePath WriteMode $ \handle -> do
+                hPutStr handle (unlines newTaskContent)
+
+ifNewTaskExists :: String -> String -> String -> IO ()
+ifNewTaskExists username listName taskName = do
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName++".new"
+    existFile <- doesFileExist filePath
+    if existFile then do
+        --removeFile (directoryDatabase++username++"/listas/"++listName++"/"++taskName)
+        renameFile filePath (directoryDatabase++username++"/listas/"++listName++"/"++taskName)
+    else return ()

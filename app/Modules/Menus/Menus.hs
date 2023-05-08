@@ -6,7 +6,6 @@ import Modules.Users.Users
 import Modules.Util.ClearScreen
 import Modules.ToDoList.ToDoList
 import Modules.Database.Database
-import Modules.Tasks.Tasks
 import Distribution.Compat.Directory (listDirectory)
 import Control.Monad
 import System.Directory
@@ -81,11 +80,42 @@ telaPerfil username = do
     option <- getLine
     case option of
         "1" -> do
-            return ()
+            telaEditarUsuario username
         "2" -> telaLogin username
         _ -> do
             putStrLn "Opção inválida, tente novamente."
             telaPerfil username
+
+telaEditarUsuario :: String -> IO()
+telaEditarUsuario username = do
+    clearScreen
+    putStrLn "1. Nome\n2. Username\n3. Senha\n4. Descrição\n5. Sair"
+    option <- getLine
+    case option of
+        "1" -> do
+            putStrLn "Novo Nome: "
+            name <- getLine
+            editUser username name "" ""
+            telaPerfil username
+        "2" -> do
+            putStrLn "Novo Username: "
+            username <- getLine
+            editUser username "" "" ""
+            telaPerfil username
+        "3" -> do
+            putStrLn "Nova Senha: "
+            password <- getLine
+            editUser username "" password ""
+            telaPerfil username
+        "4" -> do
+            putStrLn "Nova Descrição: "
+            desc <- getLine
+            editUser username "" "" desc
+            telaPerfil username
+        "5" -> telaLogin username
+        _ -> do
+            putStrLn "Opção inválida, tente novamente."
+            telaEditarUsuario username
 
 telaListas :: String -> IO ()
 telaListas username = do
@@ -145,7 +175,7 @@ telaListarTarefas username name = do
         let path = directoryDatabase ++ username ++ "\\listas\\" ++ name ++ "\\" ++ tarefa
         isFile <- doesFileExist path
         if isFile && takeExtension tarefa /= ".txt"
-          then putStrLn $ show i ++ ". " ++ tarefa
+          then putStrLn $ show (i) ++ ". " ++ tarefa
           else return ()
     option <- getLine
     case option of
@@ -214,22 +244,23 @@ telaEditarTarefa username namelist task = do
         "1" -> do
             putStrLn "Novo nome da Tarefa: "
             newname <- getLine
-            editTask username namelist task "name" newname
+            editTask username namelist task newname "name"
             telaAcessoTarefa username namelist task
         "2" -> do
             putStrLn "Nova descrição da Tarefa: "
             newdesc <- getLine
-            editTask username namelist task "desc" newdesc
+            editTask username namelist task newdesc "desc"
             telaAcessoTarefa username namelist task
         "3" -> do
             putStrLn "Nova data da Tarefa: "
             newdate <- getLine
-            editTask username namelist task "date" newdate
+            editTask username namelist task newdate "date"
             telaAcessoTarefa username namelist task
         "4" -> do
             putStrLn "Nova prioridade da Tarefa: "
             newpriority <- getLine
-            editTask username namelist task "priority" newpriority
+            editTask username namelist task newpriority "priority"
+            ifNewTaskExists username namelist task
             telaAcessoTarefa username namelist task
         "5" -> telaAcessoTarefa username namelist task
         _ -> do
