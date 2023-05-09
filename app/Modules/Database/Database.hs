@@ -4,6 +4,7 @@ module Modules.Database.Database where
 import System.IO
 import System.Directory
 import Control.Monad (filterM)
+import Modules.Util.AbrirFecharArquivo
 
 directoryDatabase :: String
 directoryDatabase = "./Modules/Database/LocalUsers/" -- Função que retorna o local padrão dos users criados
@@ -14,7 +15,9 @@ createUserDatabase username name password description = do -- Função que cria 
     let user = [username, name, password, description] -- seta 'user' como uma lista que guarda os parâmetros passados
     createDirectory (directoryDatabase ++ username)
     createDirectory (directoryDatabase ++ "/" ++ username ++ "/" ++ "listas")
-    writeFile (directoryDatabase++username++"/"++username++ ".txt") (unlines user)
+    createDirectory (directoryDatabase ++ "/" ++ username ++ "/" ++ "sharedWithMe")
+    withFile (directoryDatabase ++ username ++ "/" ++ username ++ ".txt") WriteMode $ \handle -> do
+        hPutStrLn handle (unlines user)
     -- escreve um arquivo txt com os dados da lista anterior, onde o nome do arquivo é o username
 
 deleteUserDatabase :: String -> IO()
@@ -30,7 +33,8 @@ getNameDatabase username = do -- Função que retorna o nome de um usuário
 editUserDatabase :: String -> String -> String -> String -> IO()
 editUserDatabase username name password description = do
     let user = [username, name, password, description]
-    writeFile (directoryDatabase++username++"/"++username++ ".txt") (unlines user)
+    withFile (directoryDatabase ++ username ++ "/" ++ username ++ ".txt") WriteMode $ \handle -> do
+        hPutStrLn handle (unlines user)
 
 --funções relacionadas ao login
 loginDatabase :: String -> String -> IO Bool
@@ -51,8 +55,43 @@ createToDoListDatabase username listName listdesc = do
     existFile <- doesDirectoryExist (directoryDatabase ++ username ++ "/listas"++"/"++listName)
     if not existFile then do
         createDirectory (directoryDatabase ++ username ++ "/listas"++"/"++listName)
-        writeFile (directoryDatabase++username++"/listas/"++listName++"/"++listName++ ".txt") (unlines listcontent)
+        withFile (directoryDatabase ++ username ++ "/listas/" ++ listName ++ "/" ++ listName ++ ".txt") WriteMode $ \handle -> do
+            hPutStrLn handle (unlines listcontent)
     else return ()
+
+addUserToListDatabase :: String -> String -> String -> IO()
+addUserToListDatabase username creator listName = do
+    let listdir = directoryDatabase ++ username ++ "/sharedWithMe"
+    let userList = listdir ++ "/" ++ listName
+    existFile <- doesFileExist userList
+    if existFile then do
+        appendFile userList (creator ++ "\n" ++ listName ++ "\n")
+    else do
+        withFile userList WriteMode $ \handle -> do
+            hPutStrLn handle (creator ++ "\n" ++ listName ++ "\n")
+
+removeUserFromListDatabase :: String -> String -> IO ()
+removeUserFromListDatabase username listName = do
+    let filePath = directoryDatabase ++ username ++ "/listas/" ++ listName ++ "/users.txt"
+    existFile <- doesFileExist filePath
+    if existFile then do
+        contents <- readFile filePath
+        let permissions = lines contents
+            newPermissions = filter (/= username) permissions
+        writeFile filePath (unlines newPermissions)
+    else
+        return ()
+
+getSharedListDatabase :: String -> IO [String]
+getSharedListDatabase username = do
+    let filePath = directoryDatabase ++ username ++ "/sharedWithMe"
+    existFile <- doesDirectoryExist filePath
+    if existFile then do
+        contents <- getDirectoryContents filePath
+        let lists = filter (\x -> x /= "." && x /= "..") contents
+        return lists
+    else
+        return []
 
 addTaskDatabase :: String -> String -> String -> String -> String -> String -> IO()
 addTaskDatabase username listName taskName taskDesc taskDate taskPriority = do
@@ -60,6 +99,13 @@ addTaskDatabase username listName taskName taskDesc taskDate taskPriority = do
     let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName
     withFile filePath WriteMode $ \handle -> do
         hPutStr handle (unlines taskcontent)
+
+showTaskContentDatabase :: String -> String -> String -> IO [String]
+showTaskContentDatabase username listName taskName = do
+    let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName
+    conteudo <- readFile filePath
+    let linhas = lines conteudo
+    return linhas
 
 deleteTaskDatabase :: String -> String -> String -> IO()
 deleteTaskDatabase username listName taskName = do
@@ -95,6 +141,6 @@ ifNewTaskExists username listName taskName = do
     let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName++".new"
     existFile <- doesFileExist filePath
     if existFile then do
-        --removeFile (directoryDatabase++username++"/listas/"++listName++"/"++taskName)
+        removeFile (directoryDatabase++username++"/listas/"++listName++"/"++taskName)
         renameFile filePath (directoryDatabase++username++"/listas/"++listName++"/"++taskName)
     else return ()

@@ -120,19 +120,40 @@ telaEditarUsuario username = do
 telaListas :: String -> IO ()
 telaListas username = do
   clearScreen
-  putStrLn "1. Suas Listas\n2. Cadastrar Nova Lista\n3. Sair"
+  putStrLn "1. Suas Listas\n2. Listas Compartilhadas Comigo\n3. Cadastrar Nova Lista\n4. Sair"
   option <- getLine
   case option of
     "1" -> do
       telaListasPerfil username
       return ()
-    "2" -> do
+    "3" -> do
       telaCadastroListas username
       return ()
-    "3" -> telaLogin username
+    "4" -> telaLogin username
+    "2" -> do
+      telaListasCompartilhadas username
+      return ()
     _ -> do
       putStrLn "Opção inválida, tente novamente."
       telaListas username
+
+telaListasCompartilhadas :: String -> IO ()
+telaListasCompartilhadas username = do
+    clearScreen
+    putStrLn "Listas Compartilhadas Comigo"
+    listas <- getSharedList username
+    putStrLn "0. Sair"
+    let listas' = zip [1..] listas
+    forM_ listas' $ \(i, lista) -> do
+        putStrLn $ show i ++ ". " ++ lista
+    option <- getLine
+    case option of
+        "0" -> telaListas username
+        _ -> do
+            let listname = listas !! (read option - 1)
+            finallist <- readFile (directoryDatabase ++ username ++ "/sharedWithMe/" ++ listname)
+            let creator = head $ lines finallist
+            telaAcessoLista username creator listname
 
 
 telaCadastroListas :: String -> IO ()
@@ -147,82 +168,110 @@ telaCadastroListas username = do
     return ()
 
 
-telaAcessoLista :: String -> String -> IO ()
-telaAcessoLista username name = do
+telaAcessoLista :: String -> String -> String -> IO ()
+telaAcessoLista username creator name = do
     clearScreen
-    putStrLn "1. Adicionar Tarefa\n2. Listar Tarefas\n3. Sair"
+    putStrLn "1. Adicionar Tarefa\n2. Listar Tarefas\n3. Compartilhar Lista\n4. Sair"
     option <- getLine
     case option of
         "1" -> do
-            telaAdicionarTarefa username name
+            telaAdicionarTarefa username creator name
             return ()
         "2" -> do
-            telaListarTarefas username name
+            telaListarTarefas username creator name
             return ()
-        "3" -> telaListasPerfil username
+        "4" -> telaListas username
+        "3" -> do
+            putStrLn "Digite o username do usuário que deseja compartilhar a lista: "
+            username' <- getLine
+            addUserToList username' creator name
+            telaAcessoLista username creator name
         _ -> do
             putStrLn "Opção inválida, tente novamente."
-            telaAcessoLista username name
+            telaAcessoLista username creator name
 
-telaListarTarefas :: String -> String -> IO ()
-telaListarTarefas username name = do
+telaListarTarefas :: String -> String -> String -> IO ()
+telaListarTarefas username creator name = do
     clearScreen
     putStrLn "Suas Tarefas: "
-    tarefas <- listDirectory (directoryDatabase ++ username ++ "\\listas\\" ++ name ++ "\\")
+    tarefas <- listDirectory (directoryDatabase ++ creator ++ "\\listas\\" ++ name ++ "\\")
     putStrLn "0. Voltar"
     let tarefas' = zip [1..] tarefas
     forM_ tarefas' $ \(i, tarefa) -> do
-        let path = directoryDatabase ++ username ++ "\\listas\\" ++ name ++ "\\" ++ tarefa
+        let path = directoryDatabase ++ creator ++ "\\listas\\" ++ name ++ "\\" ++ tarefa
         isFile <- doesFileExist path
         if isFile && takeExtension tarefa /= ".txt"
           then putStrLn $ show (i) ++ ". " ++ tarefa
           else return ()
     option <- getLine
     case option of
-        "0" -> telaAcessoLista username name
+        "0" -> telaAcessoLista username creator name
         _ -> do
             let tarefa = tarefas' !! (read option - 1)
-            telaAcessoTarefa username name (snd tarefa)
+            telaAcessoTarefa username creator name (snd tarefa)
             return ()
 
-telaAcessoTarefa :: String -> String -> String -> IO ()
-telaAcessoTarefa username name task = do
+telaAcessoTarefa :: String -> String -> String -> String -> IO ()
+telaAcessoTarefa username creator name task = do
     clearScreen
-    putStrLn "1. Editar Tarefa\n2. Excluir Tarefa\n3. Sair"
+    putStrLn "1. Exibir Tarefa\n2. Editar Tarefa\n3. Excluir Tarefa\n4. Sair"
     option <- getLine
     case option of
-        "1" -> do
-            telaEditarTarefa username name task
-            return ()
         "2" -> do
-            telaExcluirTarefa username name task
+            telaEditarTarefa username creator name task
             return ()
-        "3" -> telaListarTarefas username name
+        "3" -> do
+            telaExcluirTarefa username creator name task
+            return ()
+        "4" -> telaListarTarefas username creator name
+        "1" -> do
+            clearScreen
+            linhas <- showTaskContent creator name task
+            putStrLn $ "Nome: " ++ (linhas !! 0)
+            putStrLn $ "Descrição: " ++ (linhas !! 1)
+            putStrLn $ "Data: " ++ (linhas !! 2)
+            putStrLn $ "Prioridade: " ++ (linhas !! 3)
+            putStrLn ""
+            putStrLn "0. Voltar"
+            --putStrLn "1. Editar Tarefa"
+            --putStrLn "2. Excluir Tarefa"
+            option <- getLine
+            case option of
+                "0" -> telaAcessoTarefa username creator name task
+                --"1" -> do
+                --    telaEditarTarefa username name task
+                --    return ()
+                --"2" -> do
+                --    telaExcluirTarefa username name task
+                --    return ()
+                _ -> do
+                    putStrLn "Opção inválida, tente novamente."
+                    telaAcessoTarefa username creator name task
         _ -> do
             putStrLn "Opção inválida, tente novamente."
-            telaAcessoTarefa username name task
+            telaAcessoTarefa username creator name task
 
-telaExcluirTarefa :: String -> String -> String -> IO ()
-telaExcluirTarefa username name task = do
+telaExcluirTarefa :: String -> String -> String -> String -> IO ()
+telaExcluirTarefa username creator name task = do
     clearScreen
     putStrLn "Tem certeza que deseja excluir essa tarefa?"
     putStrLn "Sim (S) - Não (N)"
     resp <- getLine
     case resp of
         "S" -> do
-            deleteTask username name task
-            telaListarTarefas username name
-        "N" -> telaAcessoTarefa username name task
+            deleteTask creator name task
+            telaListarTarefas username creator name
+        "N" -> telaAcessoTarefa username creator name task
         "s" -> do
-            deleteTask username name task
-            telaListarTarefas username name
-        "n" -> telaAcessoTarefa username name task
+            deleteTask creator name task
+            telaListarTarefas username creator name
+        "n" -> telaAcessoTarefa username creator name task
         _   -> do
             putStrLn "Opção Inválida"
-            telaExcluirTarefa username name task
+            telaExcluirTarefa username creator name task
 
-telaAdicionarTarefa :: String -> String -> IO()
-telaAdicionarTarefa username namelist= do
+telaAdicionarTarefa :: String -> String -> String -> IO()
+telaAdicionarTarefa username creator namelist= do
     clearScreen
     putStrLn "Nome da Tarefa: "
     taskname <- getLine
@@ -232,12 +281,13 @@ telaAdicionarTarefa username namelist= do
     date <- getLine
     putStrLn "Qual a prioridade dessa tarefa? (1 - 5)"
     priority <- getLine
-    addTask username namelist taskname desc date priority
-    telaListarTarefas username namelist
+    addTask creator namelist taskname desc date priority
+    telaListarTarefas username creator namelist
 
-telaEditarTarefa :: String -> String -> String -> IO ()
-telaEditarTarefa username namelist task = do
+telaEditarTarefa :: String -> String -> String -> String -> IO ()
+telaEditarTarefa username creator namelist task = do
     clearScreen
+    ifNewTaskExists username namelist task
     putStrLn "1. Nome da Tarefa\n2. Descrição da Tarefa\n3. Data da Tarefa\n4. Prioridade da Tarefa\n5. Sair"
     option <- getLine
     case option of
@@ -245,27 +295,26 @@ telaEditarTarefa username namelist task = do
             putStrLn "Novo nome da Tarefa: "
             newname <- getLine
             editTask username namelist task newname "name"
-            telaAcessoTarefa username namelist task
+            telaAcessoTarefa username creator namelist task
         "2" -> do
             putStrLn "Nova descrição da Tarefa: "
             newdesc <- getLine
             editTask username namelist task newdesc "desc"
-            telaAcessoTarefa username namelist task
+            telaAcessoTarefa username creator namelist task
         "3" -> do
             putStrLn "Nova data da Tarefa: "
             newdate <- getLine
             editTask username namelist task newdate "date"
-            telaAcessoTarefa username namelist task
+            telaAcessoTarefa username creator namelist task
         "4" -> do
             putStrLn "Nova prioridade da Tarefa: "
             newpriority <- getLine
             editTask username namelist task newpriority "priority"
-            ifNewTaskExists username namelist task
-            telaAcessoTarefa username namelist task
-        "5" -> telaAcessoTarefa username namelist task
+            telaAcessoTarefa username creator namelist task
+        "5" -> telaAcessoTarefa username creator namelist task
         _ -> do
             putStrLn "Opção inválida, tente novamente."
-            telaEditarTarefa username namelist task
+            telaEditarTarefa username creator namelist task
 
 telaListasPerfil :: String -> IO ()
 telaListasPerfil username = do
@@ -281,5 +330,5 @@ telaListasPerfil username = do
         "0" -> telaListas username
         _ -> do
             let list = listas' !! (read option - 1)
-            telaAcessoLista username (snd list)
+            telaAcessoLista username username (snd list)
             return ()
