@@ -58,17 +58,24 @@ createToDoListDatabase username listName listdesc = do
         withFile (directoryDatabase ++ username ++ "/listas/" ++ listName ++ "/" ++ listName ++ ".txt") WriteMode $ \handle -> do
             hPutStrLn handle (unlines listcontent)
     else return ()
-
 addUserToListDatabase :: String -> String -> String -> IO()
 addUserToListDatabase username creator listName = do
     let listdir = directoryDatabase ++ username ++ "/sharedWithMe"
     let userList = listdir ++ "/" ++ listName
-    existFile <- doesFileExist userList
-    if existFile then do
-        appendFile userList (creator ++ "\n" ++ listName ++ "\n")
+    existDirectory <- doesDirectoryExist listdir
+    if not existDirectory then do
+        putStrLn "Usuário incorreto, ou não cadastrado."
+        putStrLn "Tentar novamente? (s/n)"
+        option <- getLine
+        (if (option == "s") || (option == "S") then (do
+            addUserToListDatabase username creator listName) else return ())
     else do
-        withFile userList WriteMode $ \handle -> do
-            hPutStrLn handle (creator ++ "\n" ++ listName ++ "\n")
+        existFile <- doesFileExist userList
+        if existFile then do
+            appendFile userList (creator ++ "\n" ++ listName ++ "\n")
+        else do
+            withFile userList WriteMode $ \handle -> do
+                hPutStrLn handle (creator ++ "\n" ++ listName ++ "\n")
 
 removeUserFromListDatabase :: String -> String -> IO ()
 removeUserFromListDatabase username listName = do
