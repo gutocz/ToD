@@ -25,5 +25,6 @@ Para executar a ToD, é necessário ter o compilador GHC e a ferramenta de const
 
 1. Clone este repositório em sua máquina local.
 2. Certifique-se de ter o compilador [GHC](https://www.haskell.org/ghcup/) e a ferramenta de construção Cabal instalados em sua máquina.
-3. Na raiz do projeto, execute o comando cabal install para instalar todas as dependências necessárias.
-4. Execute o comando cabal run para iniciar a aplicação.
+3. Navegue até a pasta "app" do projeto.
+4. Execute o comando "ghc Main.hs".
+5. Execute o comando "./Main" ou clique no executável gerado.
