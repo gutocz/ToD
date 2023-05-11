@@ -30,6 +30,12 @@ getNameDatabase username = do -- Função que retorna o nome de um usuário
     let linhas = lines conteudo -- seta 'linhas' como uma lista onde cada termo é uma linha de 'conteudo'
     return (linhas !! 1) -- retorna o termo 1 de 'linhas' que é o Nome do user
 
+getDescriptionDatabase :: String -> IO String
+getDescriptionDatabase username = do -- Função que retorna a descrição de um usuário
+    conteudo <- readFile (directoryDatabase++username++"/"++username ++ ".txt")
+    let linhas = lines conteudo
+    return (linhas !! 3)
+
 editUserDatabase :: String -> String -> String -> String -> IO()
 editUserDatabase username name password description = do
     let user = [username, name, password, description]
@@ -55,9 +61,10 @@ createToDoListDatabase username listName listdesc = do
     existFile <- doesDirectoryExist (directoryDatabase ++ username ++ "/listas"++"/"++listName)
     if not existFile then do
         createDirectory (directoryDatabase ++ username ++ "/listas"++"/"++listName)
-        withFile (directoryDatabase ++ username ++ "/listas/" ++ listName ++ "/" ++ listName ++ ".txt") WriteMode $ \handle -> do
+        withFile (directoryDatabase ++ username ++ "/listas/" ++ listName ++ "/" ++ "0" ++ listName ++ ".txt") WriteMode $ \handle -> do
             hPutStrLn handle (unlines listcontent)
     else return ()
+
 addUserToListDatabase :: String -> String -> String -> IO()
 addUserToListDatabase username creator listName = do
     let listdir = directoryDatabase ++ username ++ "/sharedWithMe"
@@ -122,7 +129,7 @@ deleteTaskDatabase username listName taskName = do
 editTaskDatabase :: String -> String -> String -> String -> String -> IO()
 editTaskDatabase username listName taskName newData oldData = do
     let filePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName
-    let newFilePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName++".new"
+    let newFilePath = directoryDatabase++username++"/listas/"++listName++"/"++taskName++"(editado)"
     conteudo <- readFile filePath
     let linhas = lines conteudo
     case oldData of

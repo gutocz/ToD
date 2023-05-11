@@ -14,15 +14,20 @@ import System.FilePath
 menuInicial :: IO()
 menuInicial = do
     clearScreen
-    putStrLn "SALVE\nMENU FODA"
-    putStrLn "Selecione uma opção:\n1. Cadastrar novo usuário\n2. Fazer Login\n3. Sair"
-    a <- getLine
-    let option = read a :: Int
-    case option of
-        1 -> cadastro
-        2 -> login
-        3 -> exitSuccess
-        _ -> putStrLn "Erro"
+    putStrLn "========== MENU INICIAL =========="
+    putStrLn "Selecione uma opção:\n"
+    putStrLn "1. Cadastrar novo usuário"
+    putStrLn "2. Fazer Login"
+    putStrLn "3. Sair"
+    putStrLn "=================================="
+    opcao <- getLine
+    case opcao of
+        "1" -> cadastro
+        "2" -> login
+        "3" -> exitSuccess
+        _   -> do
+            putStrLn "Opção inválida, tente novamente.\n"
+            menuInicial
 
 cadastro :: IO()
 cadastro = do
@@ -63,7 +68,7 @@ login = do
 telaLogin :: String -> IO()
 telaLogin username = do
     clearScreen
-    putStrLn "1. Perfil\n2. Listas\n3. Sair"
+    putStrLn "1. Perfil\n2. Listas\n3. Logout"
     option <- getLine
     case (read option :: Int) of
         1 -> telaPerfil username
@@ -76,15 +81,41 @@ telaLogin username = do
 telaPerfil :: String -> IO()
 telaPerfil username = do
     clearScreen
-    putStrLn "1. Editar Perfil\n2. Sair"
+    putStrLn "1. Exibir Perfil\n2. Editar Perfil\n3. Sair"
     option <- getLine
     case option of
         "1" -> do
+            telaExibirPerfil username
+        "2" -> do
             telaEditarUsuario username
-        "2" -> telaLogin username
+        "3" -> telaLogin username
         _ -> do
             putStrLn "Opção inválida, tente novamente."
             telaPerfil username
+
+telaExibirPerfil :: String -> IO ()
+telaExibirPerfil username = do
+    clearScreen
+    putStrLn "=================================="
+    putStrLn "            PERFIL"
+    putStrLn "=================================="
+    putStrLn ""
+    name <- getName username
+    putStrLn ("Nome: " ++ name)
+    putStrLn ("Username: " ++ username)
+    desc <- getDescription username
+    putStrLn ("Descrição: " ++ desc)
+    putStrLn ""
+    putStrLn "0. Sair"
+    putStrLn "=================================="
+    option <- getLine
+    case option of
+        "0" -> telaPerfil username
+        _   -> do
+            putStrLn "Opção inválida, tente novamente."
+            telaExibirPerfil username
+
+
 
 telaEditarUsuario :: String -> IO()
 telaEditarUsuario username = do
@@ -287,7 +318,6 @@ telaAdicionarTarefa username creator namelist= do
 telaEditarTarefa :: String -> String -> String -> String -> IO ()
 telaEditarTarefa username creator namelist task = do
     clearScreen
-    ifNewTaskExists username namelist task
     putStrLn "1. Nome da Tarefa\n2. Descrição da Tarefa\n3. Data da Tarefa\n4. Prioridade da Tarefa\n5. Sair"
     option <- getLine
     case option of

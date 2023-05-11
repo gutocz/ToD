@@ -14,6 +14,9 @@ deleteUser = deleteUserDatabase -- Função que deleta um User, executada em Dat
 getName :: String -> IO String
 getName = getNameDatabase -- Função que retorna o Nome de um User, resgata do Database
 
+getDescription :: String -> IO String
+getDescription = getDescriptionDatabase -- Função que retorna a Descrição de um User, resgata do Database
+
 loginUser :: String -> String -> IO Bool
 loginUser = loginDatabase -- Função que realiza o login de um user, fazendo contato também com o Database
 
