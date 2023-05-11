@@ -114,14 +114,14 @@ telaPerfil username = do
   clearScreen
   putStrLn "Menu>Login>Opcoes>Perfil>MenuPerfil"
   putStrLn ""
-  putStrLn "1. Exibir Perfil\n2. Editar Perfil\n3. Sair"
+  putStrLn "1. Exibir Perfil\n2. Sair"
   option <- getLine
   case option of
     "1" -> do
       telaExibirPerfil username
-    "2" -> do
-      telaEditarUsuario username
-    "3" -> telaLogin username
+    --"2" -> do
+    --  telaEditarUsuario username
+    "2" -> telaLogin username
     _ -> do
       putStrLn "Opção inválida, tente novamente."
       telaPerfil username
