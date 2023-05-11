@@ -246,7 +246,7 @@ telaAcessoLista username creator name = do
   clearScreen
   putStrLn "Menu>Login>Opcoes>Listas>Tarefas"
   putStrLn ""
-  putStrLn "1. Adicionar Tarefa\n2. Listar Tarefas\n3. Compartilhar Lista\n4. Sair"
+  putStrLn "1. Adicionar Tarefa\n2. Listar Tarefas\n3. Compartilhar Lista\n4. Deletar Lista\n5. Sair"
   option <- getLine
   case option of
     "1" -> do
@@ -255,7 +255,18 @@ telaAcessoLista username creator name = do
     "2" -> do
       telaListarTarefas username creator name
       return ()
-    "4" -> telaListas username
+    "4" -> do
+        putStrLn "Tem certeza que deseja deletar a lista? (S/N)"
+        option <- getLine
+        case option of
+            "S" -> do
+                deleteToDoList username name
+                telaListas username
+                return ()
+            "N" -> do
+                telaAcessoLista username creator name
+                return ()
+    "5" -> telaListas username
     "3" -> do
       putStrLn "Digite o username do usuário que deseja compartilhar a lista: "
       username' <- getLine
@@ -372,6 +383,7 @@ telaEditarTarefa username creator namelist task = do
   clearScreen
   putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListarTarefas>MenuTarefa>EditarTarefa"
   putStrLn ""
+  putStrLn "Após editar uma tarefa, será necessário reiniciar o programa caso queira re-editar a mesma ou excluí-la."
   putStrLn "1. Nome da Tarefa\n2. Descrição da Tarefa\n3. Data da Tarefa\n4. Prioridade da Tarefa\n5. Sair"
   option <- getLine
   case option of

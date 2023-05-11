@@ -65,6 +65,11 @@ createToDoListDatabase username listName listdesc = do
             hPutStrLn handle (unlines listcontent)
     else return ()
 
+deleteToDoListDatabase :: String -> String -> IO()
+deleteToDoListDatabase username listName = do
+    let filePath = directoryDatabase ++ username ++ "/listas/" ++ listName
+    removeDirectoryRecursive filePath
+
 addUserToListDatabase :: String -> String -> String -> IO()
 addUserToListDatabase username creator listName = do
     let listdir = directoryDatabase ++ username ++ "/sharedWithMe"

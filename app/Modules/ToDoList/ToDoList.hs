@@ -7,6 +7,9 @@ data ToDoList = ToDoList { listName :: String, listDescription :: String }
 createToDoList :: String -> String -> String -> IO()
 createToDoList = createToDoListDatabase
 
+deleteToDoList :: String -> String -> IO()
+deleteToDoList = deleteToDoListDatabase
+
 addUserToList :: String -> String -> String -> IO()
 addUserToList = addUserToListDatabase
 
