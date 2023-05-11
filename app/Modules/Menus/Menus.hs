@@ -14,17 +14,20 @@ import System.IO
 menuInicial :: IO ()
 menuInicial = do
   clearScreen
-  putStrLn " oooo     oooo ooooooooooo oooo   oooo ooooo  oooo"
-  putStrLn " 8888o   888   888    88   8888o  88   888    88  "
-  putStrLn " 88 888o8 88   888ooo8     88 888o88   888    88  "
-  putStrLn " 88  888  88   888    oo   88   8888   888    88  "
-  putStrLn "o88o  8  o88o o888ooo8888 o88o    88    888oo88   "
-  putStrLn ""
-  putStrLn "Selecione uma opção:\n"
-  putStrLn "1. Cadastrar novo usuário"
-  putStrLn "2. Fazer Login"
-  putStrLn "3. Sair"
-  putStrLn "=================================================="
+  putStrLn ".--------------------------------------------------."
+  putStrLn "|oooo     oooo ooooooooooo oooo   oooo ooooo  oooo |"
+  putStrLn "| 8888o   888   888    88   8888o  88   888    88  |"
+  putStrLn "| 88 888o8 88   888ooo8     88 888o88   888    88  |"
+  putStrLn "| 88  888  88   888    oo   88   8888   888    88  |"
+  putStrLn "|o88o  8  o88o o888ooo8888 o88o    88    888oo88   |"
+  putStrLn "|                                                  |"
+  putStrLn "|Selecione uma opção:                              |"
+  putStrLn "|                                                  |"
+  putStrLn "|1. Cadastrar novo usuário                         |"
+  putStrLn "|2. Fazer Login                                    |"
+  putStrLn "|3. Sair                                           |"
+  putStrLn "|                                                  |"
+  putStrLn "'--------------------------------------------------'"
   opcao <- getLine
   case opcao of
     "1" -> cadastro
@@ -37,11 +40,15 @@ menuInicial = do
 cadastro :: IO ()
 cadastro = do
   clearScreen
-  putStrLn " oooooooo8     o      ooooooooo      o       oooooooo8 ooooooooooo oooooooooo    ooooooo   "
-  putStrLn "o888     88    888      888    88o   888     888        88  888  88  888    888 o888   888o "
-  putStrLn "888           8  88     888    888  8  88     888oooooo     888      888oooo88  888     888 "
-  putStrLn "888o     oo  8oooo88    888    888 8oooo88           888    888      888  88o   888o   o888 "
-  putStrLn " 888oooo88 o88o  o888o o888ooo88 o88o  o888o o88oooo888    o888o    o888o  88o8   88ooo88   "
+  putStrLn "Menu>Cadastro"
+  putStrLn " .--------------------------------------------------------------------------------------------."
+  putStrLn " | oooooooo8     o      ooooooooo      o       oooooooo8 ooooooooooo oooooooooo    ooooooo    |"
+  putStrLn " |o888     88    888      888    88o   888     888        88  888  88  888    888 o888   888o |"
+  putStrLn " |888           8  88     888    888  8  88     888oooooo     888      888oooo88  888     888 |"
+  putStrLn " |888o     oo  8oooo88    888    888 8oooo88           888    888      888  88o   888o   o888 |"
+  putStrLn " | 888oooo88 o88o  o888o o888ooo88 o88o  o888o o88oooo888    o888o    o888o  88o8   88ooo88   |"
+  putStrLn " |                                                                                            |"
+  putStrLn " '--------------------------------------------------------------------------------------------'"
   putStrLn ""
   putStrLn "Digite seu username: "
   name <- getLine
@@ -57,11 +64,15 @@ cadastro = do
 login :: IO ()
 login = do
   clearScreen
-  putStrLn "ooooo         ooooooo     ooooooo8 ooooo oooo   oooo    "
-  putStrLn " 888        o888   888o o888    88  888   8888o  88     "
-  putStrLn " 888        888     888 888    oooo 888   88 888o88     "
-  putStrLn " 888      o 888o   o888 888o    88  888   88   8888     "
-  putStrLn "o888ooooo88   88ooo88    888ooo888 o888o o88o    88     "
+  putStrLn "Menu>Login"
+  putStrLn " .---------------------------------------------------------."
+  putStrLn " | ooooo         ooooooo     ooooooo8 ooooo oooo   oooo    |"
+  putStrLn " |  888        o888   888o o888    88  888   8888o  88     |"
+  putStrLn " |  888        888     888 888    oooo 888   88 888o88     |"
+  putStrLn " |  888      o 888o   o888 888o    88  888   88   8888     |"
+  putStrLn " | o888ooooo88   88ooo88    888ooo888 o888o o88o    88     |"
+  putStrLn " |                                                         |"
+  putStrLn " '---------------------------------------------------------'"
   putStrLn ""
   putStrLn "Username: "
   username <- getLine
@@ -86,6 +97,8 @@ login = do
 telaLogin :: String -> IO ()
 telaLogin username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes"
+  putStrLn ""
   putStrLn "1. Perfil\n2. Listas\n3. Logout"
   option <- getLine
   case (read option :: Int) of
@@ -99,6 +112,8 @@ telaLogin username = do
 telaPerfil :: String -> IO ()
 telaPerfil username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Perfil>MenuPerfil"
+  putStrLn ""
   putStrLn "1. Exibir Perfil\n2. Editar Perfil\n3. Sair"
   option <- getLine
   case option of
@@ -114,11 +129,15 @@ telaPerfil username = do
 telaExibirPerfil :: String -> IO ()
 telaExibirPerfil username = do
   clearScreen
-  putStrLn "  oooooooooo ooooooooooo oooooooooo  ooooooooooo ooooo ooooo      "
-  putStrLn "  888    888 888    88   888    888  888    88   888   888        "
-  putStrLn "  888oooo88  888ooo8     888oooo88   888ooo8     888   888        "
-  putStrLn "  888        888    oo   888  88o    888         888   888      o "
-  putStrLn " o888o      o888ooo8888 o888o  88o8 o888o       o888o o888ooooo88 "
+  putStrLn "Menu>Login>Opcoes>Perfil"
+  putStrLn "  .------------------------------------------------------------------."
+  putStrLn "  |  oooooooooo ooooooooooo oooooooooo  ooooooooooo ooooo ooooo      |"
+  putStrLn "  |  888    888 888    88   888    888  888    88   888   888        |"
+  putStrLn "  |  888oooo88  888ooo8     888oooo88   888ooo8     888   888        |"
+  putStrLn "  |  888        888    oo   888  88o    888         888   888      o |"
+  putStrLn "  | o888o      o888ooo8888 o888o  88o8 o888o       o888o o888ooooo88 |"
+  putStrLn "  |                                                                  |"
+  putStrLn "  '------------------------------------------------------------------'"
   putStrLn ""
   name <- getName username
   putStrLn ("Nome: " ++ name)
@@ -127,7 +146,6 @@ telaExibirPerfil username = do
   putStrLn ("Descrição: " ++ desc)
   putStrLn ""
   putStrLn "0. Sair"
-  putStrLn "=================================================================="
   option <- getLine
   case option of
     "0" -> telaPerfil username
@@ -138,6 +156,8 @@ telaExibirPerfil username = do
 telaEditarUsuario :: String -> IO ()
 telaEditarUsuario username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Perfil>EditarPerfil"
+  putStrLn ""
   putStrLn "1. Nome\n2. Username\n3. Senha\n4. Descrição\n5. Sair"
   option <- getLine
   case option of
@@ -169,6 +189,8 @@ telaEditarUsuario username = do
 telaListas :: String -> IO ()
 telaListas username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas"
+  putStrLn ""
   putStrLn "1. Suas Listas\n2. Listas Compartilhadas Comigo\n3. Cadastrar Nova Lista\n4. Sair"
   option <- getLine
   case option of
@@ -189,6 +211,8 @@ telaListas username = do
 telaListasCompartilhadas :: String -> IO ()
 telaListasCompartilhadas username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>ListasCompartilhadas"
+  putStrLn ""
   putStrLn "Listas Compartilhadas Comigo"
   listas <- getSharedList username
   putStrLn "0. Sair"
@@ -207,6 +231,8 @@ telaListasCompartilhadas username = do
 telaCadastroListas :: String -> IO ()
 telaCadastroListas username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>CadastroListas"
+  putStrLn ""
   putStrLn "Nome da Lista: "
   listname <- getLine
   putStrLn "Descreva sua Lista: "
@@ -218,6 +244,8 @@ telaCadastroListas username = do
 telaAcessoLista :: String -> String -> String -> IO ()
 telaAcessoLista username creator name = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>Tarefas"
+  putStrLn ""
   putStrLn "1. Adicionar Tarefa\n2. Listar Tarefas\n3. Compartilhar Lista\n4. Sair"
   option <- getLine
   case option of
@@ -240,6 +268,8 @@ telaAcessoLista username creator name = do
 telaListarTarefas :: String -> String -> String -> IO ()
 telaListarTarefas username creator name = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListarTarefas"
+  putStrLn ""
   putStrLn "Suas Tarefas: "
   tarefas <- listDirectory (directoryDatabase ++ creator ++ "\\listas\\" ++ name ++ "\\")
   putStrLn "0. Voltar"
@@ -261,6 +291,8 @@ telaListarTarefas username creator name = do
 telaAcessoTarefa :: String -> String -> String -> String -> IO ()
 telaAcessoTarefa username creator name task = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListarTarefas>Menu"
+  putStrLn ""
   putStrLn "1. Exibir Tarefa\n2. Editar Tarefa\n3. Excluir Tarefa\n4. Sair"
   option <- getLine
   case option of
@@ -301,6 +333,8 @@ telaAcessoTarefa username creator name task = do
 telaExcluirTarefa :: String -> String -> String -> String -> IO ()
 telaExcluirTarefa username creator name task = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListaTarefas>Menu>Excluir"
+  putStrLn ""
   putStrLn "Tem certeza que deseja excluir essa tarefa?"
   putStrLn "Sim (S) - Não (N)"
   resp <- getLine
@@ -320,6 +354,8 @@ telaExcluirTarefa username creator name task = do
 telaAdicionarTarefa :: String -> String -> String -> IO ()
 telaAdicionarTarefa username creator namelist = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListarTarefas>MenuTarefa>AdicionarTarefa"
+  putStrLn ""
   putStrLn "Nome da Tarefa: "
   taskname <- getLine
   putStrLn "Descreva sua Tarefa: "
@@ -334,6 +370,8 @@ telaAdicionarTarefa username creator namelist = do
 telaEditarTarefa :: String -> String -> String -> String -> IO ()
 telaEditarTarefa username creator namelist task = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListarTarefas>MenuTarefa>EditarTarefa"
+  putStrLn ""
   putStrLn "1. Nome da Tarefa\n2. Descrição da Tarefa\n3. Data da Tarefa\n4. Prioridade da Tarefa\n5. Sair"
   option <- getLine
   case option of
@@ -365,6 +403,8 @@ telaEditarTarefa username creator namelist task = do
 telaListasPerfil :: String -> IO ()
 telaListasPerfil username = do
   clearScreen
+  putStrLn "Menu>Login>Opcoes>Listas>ListasPerfil"
+  putStrLn ""
   putStrLn "Suas Listas: "
   listas <- listDirectory (directoryDatabase ++ username ++ "\\listas\\")
   putStrLn "0. Voltar"
