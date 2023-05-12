@@ -282,11 +282,12 @@ telaListarTarefas username creator name = do
   putStrLn "Menu>Login>Opcoes>Listas>Tarefas>ListarTarefas"
   putStrLn ""
   putStrLn "Suas Tarefas: "
-  tarefas <- listDirectory (directoryDatabase ++ creator ++ "\\listas\\" ++ name ++ "\\")
+  let listasDir = directoryDatabase </> creator </> "listas" </> name </> ""
+  tarefas <- listDirectory listasDir
   putStrLn "0. Voltar"
   let tarefas' = zip [1 ..] tarefas
   forM_ tarefas' $ \(i, tarefa) -> do
-    let path = directoryDatabase ++ creator ++ "\\listas\\" ++ name ++ "\\" ++ tarefa
+    let path = combine listasDir tarefa
     isFile <- doesFileExist path
     if isFile && takeExtension tarefa /= ".txt"
       then putStrLn $ show (i) ++ ". " ++ tarefa
@@ -418,15 +419,22 @@ telaListasPerfil username = do
   putStrLn "Menu>Login>Opcoes>Listas>ListasPerfil"
   putStrLn ""
   putStrLn "Suas Listas: "
-  listas <- listDirectory (directoryDatabase ++ username ++ "\\listas\\")
-  putStrLn "0. Voltar"
-  let listas' = zip [1 ..] $ filter (not . (== ".txt") . takeExtension) listas
-  forM_ listas' $ \(i, lista) -> do
-    putStrLn $ show i ++ ". " ++ lista
-  option <- getLine
-  case option of
-    "0" -> telaListas username
-    _ -> do
-      let list = listas' !! (read option - 1)
-      telaAcessoLista username username (snd list)
-      return ()
+  let listasDir = directoryDatabase </> username </> "listas"
+  dirExists <- doesDirectoryExist listasDir
+  if dirExists
+    then do
+      listas <- listDirectory listasDir
+      putStrLn "0. Voltar"
+      let listas' = zip [1 ..] $ filter (not . (== ".txt") . takeExtension) listas
+      forM_ listas' $ \(i, lista) -> do
+        putStrLn $ show i ++ ". " ++ lista
+      option <- getLine
+      case option of
+        "0" -> telaListas username
+        _ -> do
+          let list = listas' !! (read option - 1)
+          telaAcessoLista username username (snd list)
+          return ()
+    else do
+      putStrLn "O diretório não existe"
+      telaListas username
