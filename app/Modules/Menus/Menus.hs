@@ -1,7 +1,6 @@
 module Modules.Menus.Menus where
 
 import Control.Monad
-import Distribution.Compat.Directory (listDirectory)
 import Modules.Database.Database
 import Modules.ToDoList.ToDoList
 import Modules.Users.Users
